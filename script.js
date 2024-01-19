@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', loadGoals);
+document.addEventListener('DOMContentLoaded', () => {
+    loadGoals();
+    addCurrentDates();
+});
+
 document.getElementById('goal-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -23,6 +27,7 @@ function createGoalElement(goalText) {
     let li = document.createElement('li');
 
     let textSpan = document.createElement('span');
+    textSpan.className = 'goal-text';
     textSpan.textContent = goalText;
     li.appendChild(textSpan);
 
@@ -33,8 +38,17 @@ function createGoalElement(goalText) {
         li.classList.toggle('completed');
         saveGoals();
     };
-
     li.appendChild(completeButton);
+
+    let deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-btn';
+    deleteButton.onclick = function() {
+        li.remove();
+        saveGoals();
+    };
+    li.appendChild(deleteButton);
+
     return li;
 }
 
@@ -44,7 +58,8 @@ function saveGoals() {
         let day = dayDiv.id;
         let dayGoals = [];
         dayDiv.querySelectorAll('li').forEach(li => {
-            dayGoals.push({ text: li.querySelector('span').textContent, completed: li.classList.contains('completed') });
+            let goalText = li.childNodes[0].nodeValue.trim();
+            dayGoals.push({ text: goalText, completed: li.classList.contains('completed') });
         });
         goals[day] = dayGoals;
     });
@@ -66,4 +81,20 @@ function loadGoals() {
             });
         });
     }
+}
+
+function addCurrentDates() {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date();
+    days.forEach(day => {
+        let dayIndex = days.indexOf(day);
+        let date = new Date(today);
+        date.setDate(today.getDate() - today.getDay() + dayIndex);
+        let dateString = date.toLocaleDateString();
+        document.getElementById(day).querySelector('h3').textContent = `${capitalize(day)} - ${dateString}`;
+    });
+}
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
