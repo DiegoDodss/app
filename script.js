@@ -33,11 +33,20 @@ function createGoalElement(goalText) {
         li.classList.toggle('completed');
         saveGoals();
     };
-
     li.appendChild(completeButton);
+
+    // Adicionando o botão de exclusão
+    let deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-btn';
+    deleteButton.onclick = function() {
+        li.remove();
+        saveGoals();
+    };
+    li.appendChild(deleteButton);
+
     return li;
 }
-
 function saveGoals() {
     let goals = {};
     document.querySelectorAll('.daily-goals').forEach(dayDiv => {
